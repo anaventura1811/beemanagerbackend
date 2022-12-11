@@ -1,14 +1,14 @@
-const client = require('../connection');
+const connection = require('../connection');
 
 const getUser = async (userInfo) => {
   const { username } = userInfo;
   const queryText = `SELECT username FROM users WHERE username = $1`;
 
   const values = [username];
-
-  const user = await client.query(queryText, values).then(async res => res);
+  const pgClient = await connection();
+  const user = await pgClient.query(queryText, values).then(async res => res);
+  await pgClient.release();
   if (user) return user?.rows[0];
-  await client.end();
 
 }
 
@@ -18,6 +18,7 @@ const createUser = async (userInfo) => {
     username,
     password
   } = userInfo;
+  const pgClient = await connection();
   const queryText = `INSERT INTO users(name, username, password) VALUES($1, $2, $3)`;
 
   const values = [name, username,
@@ -25,13 +26,8 @@ const createUser = async (userInfo) => {
   ];
 
   try {
-    await client.query(queryText, values).then(res => {
-      console.log('response: ', { res});
-      if (res) {
-        return res;
-      }
-  });
-    await client.end();
+    await pgClient.query(queryText, values).then(res => res);
+    await pgClient.release();
     return;
 
   } catch(e) {

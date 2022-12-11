@@ -10,6 +10,16 @@ const createUser = async (userInfo) => {
   }
 }
 
+const getUser = async (userInfo) => {
+  const user = await Promise.resolve(userModel.getUser(userInfo));
+  if (user) {
+    return user;
+  } else {
+    return { message: 'Usuário não encontrado', error: 'User not found'};
+  }
+}
+
 module.exports = {
-  createUser
+  createUser,
+  getUser
 }

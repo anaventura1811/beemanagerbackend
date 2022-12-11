@@ -16,6 +16,11 @@ const createUser = async (req, res) => {
   }
 }
 
+const getUser = async (req, res) => {
+  const { name, password, username } = req.body;
+  
+}
+
 module.exports = { 
   createUser
 };
