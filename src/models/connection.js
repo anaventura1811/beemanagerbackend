@@ -1,8 +1,8 @@
-async function connection() {
-    if (global.connection) return global.connection.connect();
+const { Pool } = require('pg');
+require('dotenv').config();
 
-    const { Pool } = require('pg');
-    require('dotenv').config();
+const connection = async () => {
+    if (global.connection) return global.connection.connect();
 
     const credentials = {
       user: process.env.DB_USER,
@@ -14,10 +14,9 @@ async function connection() {
     const pool = new Pool(credentials);
 
     const client = await pool.connect();
-    console.log("Conectado com o BeeManager Database criada com sucesso!");
-
     const res = await client.query('SELECT NOW()');
-    console.log(res.rows[0]);
+    console.log(`Conexão com o BeeManager Database criada com sucesso às ${res.rows[0]?.now}!`);
+
     client.release();
 
     global.connection = pool;
