@@ -11,14 +11,9 @@ const credentials = {
   port: process.env.DB_PORT,
 }
 
-const client = new Client(credentials)
+const client = new Client(credentials);
 
-const connection = async () => {
-  await client.connect((error) => {
-    if (error) throw error;
-    console.log('connected to db');
-  })
-} 
+client.connect();
 
-module.exports = connection;
+module.exports = client;
   

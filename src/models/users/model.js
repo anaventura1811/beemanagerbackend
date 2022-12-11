@@ -1,4 +1,16 @@
-const connection = require('../connection');
+const client = require('../connection');
+
+const getUser = async (userInfo) => {
+  const { username } = userInfo;
+  const queryText = `SELECT username FROM users WHERE username = $1`;
+
+  const values = [username];
+
+  const user = await client.query(queryText, values).then(async res => res);
+  if (user) return user?.rows[0];
+  await client.end();
+
+}
 
 const createUser = async (userInfo) => {
   const {
@@ -6,15 +18,29 @@ const createUser = async (userInfo) => {
     username,
     password
   } = userInfo;
-  const queryText = `INSERT INTO users(name, username, password) VALUES(${name}, ${username}, ${password})`;
+  const queryText = `INSERT INTO users(name, username, password) VALUES($1, $2, $3)`;
 
-  await connection().then(async cl => await cl.query(queryText));
+  const values = [name, username,
+    password
+  ];
+
   try {
-    await connection().then(async cl => await cl.query(queryText));
+    await client.query(queryText, values).then(res => {
+      console.log('response: ', { res});
+      if (res) {
+        return res;
+      }
+  });
+    await client.end();
+    return;
+
   } catch(e) {
-    if (e) {
-      console.log(e);
-    }
+    return e;
 
   }
+}
+
+module.exports = {
+  createUser,
+  getUser
 }
